@@ -1,0 +1,13 @@
+{
+  "/worker": {
+    "target": "http://localhost:8081",
+    "secure": false,
+    "pathRewrite": {
+      "^/worker": ""
+    }
+  },
+  "/api": {
+    "target": "http://localhost:8080",
+    "secure": false
+  }
+}
