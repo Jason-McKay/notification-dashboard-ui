@@ -64,8 +64,8 @@ Port 8080 is also the message-inspector backend's port. Stop that first if it is
 3. Tick **Fail on purpose** and send again. That one names a template that does not exist,
    so the worker tries it three times (waiting 1s, then 2s) and parks it. The panel shows it go
    `RETRYING` and then `DEAD_LETTERED`, with three failed attempts and the dead-letter
-   marker in its timeline. `FAILED` lasts milliseconds on the way to the dead-letter topic,
-   so you will rarely catch it on screen.
+   marker in its timeline. `FAILED` lasts well under a second on the way to the dead-letter
+   topic, so a 5-second poll usually skips it.
 4. Filters, page and the open row all live in the URL, so any view can be linked to.
 
 A 404 for a delivery you have just sent is expected for a moment: the worker writes the row

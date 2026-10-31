@@ -65,8 +65,9 @@ new filter or tick cancels the request it replaces.
 - **A detail 404 straight after a send is normal.** The worker writes the row when it
   consumes the event; the panel shows "Not recorded yet" and keeps polling (only while
   auto-refresh is on).
-- **`FAILED` is almost never visible.** It lasts milliseconds between the last try and the
-  dead-letter topic. Expect `RETRYING`, then `DEAD_LETTERED`.
+- **`FAILED` is rarely visible.** It lasts well under a second (about 500ms on the live
+  stack) between the last try and the dead-letter topic. Expect `RETRYING`, then
+  `DEAD_LETTERED`; a test must not wait for `FAILED`.
 - **Stats count rows *updated* in the last 24h**, not created. An old delivery that changes
   state shows up again.
 - **The recipient filter is an exact match** on the worker. There is no partial search.
