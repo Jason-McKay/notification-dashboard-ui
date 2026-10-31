@@ -1,0 +1,48 @@
+<div class="page-heading">
+  <h1>Overview</h1>
+  @if (stats(); as current) {
+    <p class="muted">Rows updated since {{ current.since | date: 'medium' }}, the last 24 hours.</p>
+  }
+</div>
+
+@if (error(); as message) {
+  <p class="error" role="alert">{{ message }}</p>
+}
+
+@if (stats()) {
+  <ul class="cards" aria-label="Deliveries by status">
+    @for (card of cards(); track card.label) {
+      <li>
+        <a class="card" routerLink="/notifications" [queryParams]="card.query">
+          <span class="card-label">
+            @if (card.status) {
+              <span class="dot" aria-hidden="true" [attr.data-status]="card.status"></span>
+            }
+            {{ card.label }}
+          </span>
+          <span class="card-value">{{ card.value }}</span>
+          @if (card.note) {
+            <span class="card-note">{{ card.note }}</span>
+          }
+        </a>
+      </li>
+    }
+  </ul>
+
+  <section class="panel channels" aria-labelledby="channels-heading">
+    <h2 id="channels-heading">By channel</h2>
+    <ul class="bars">
+      @for (bar of channels(); track bar.channel) {
+        <li class="bar-row" [title]="bar.title">
+          <span class="bar-label">{{ bar.channel }}</span>
+          <span class="bar-track">
+            <span class="bar-fill" [style.width.%]="bar.percent"></span>
+          </span>
+          <span class="bar-value">{{ bar.count }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+} @else if (!error()) {
+  <p class="muted">Loading...</p>
+}

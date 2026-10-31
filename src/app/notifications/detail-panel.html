@@ -1,0 +1,70 @@
+<aside class="panel" aria-labelledby="detail-heading">
+  <div class="detail-head">
+    <h2 id="detail-heading">
+      Delivery <code>{{ eventId().slice(0, 8) }}</code>
+    </h2>
+    <button type="button" class="icon" aria-label="Close details" (click)="closed.emit()">
+      &times;
+    </button>
+  </div>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+
+  @if (detail(); as current) {
+    <dl class="facts">
+      <dt>Status</dt>
+      <dd><app-status-chip [status]="current.status" /></dd>
+      <dt>Event ID</dt>
+      <dd>
+        <code class="wrap">{{ current.eventId }}</code>
+      </dd>
+      <dt>Recipient</dt>
+      <dd>{{ current.recipientId }}</dd>
+      <dt>Destination</dt>
+      <dd>{{ current.channel }} &middot; {{ current.destination }}</dd>
+      <dt>Template</dt>
+      <dd>
+        <code>{{ current.templateKey }}</code>
+      </dd>
+      <dt>Requested</dt>
+      <dd>{{ current.requestedAt | date: 'MMM d, HH:mm:ss.SSS' }}</dd>
+      <dt>Updated</dt>
+      <dd>{{ current.updatedAt | date: 'MMM d, HH:mm:ss.SSS' }}</dd>
+    </dl>
+
+    <h3>Attempts</h3>
+    @if (current.attempts.length) {
+      <ol class="timeline">
+        @for (attempt of current.attempts; track $index) {
+          <li>
+            <div class="timeline-row">
+              <app-status-chip [status]="attempt.status" />
+              <time [attr.datetime]="attempt.attemptedAt">{{
+                attempt.attemptedAt | date: 'HH:mm:ss.SSS'
+              }}</time>
+            </div>
+            @if (attempt.detail) {
+              <p class="attempt-detail">{{ attempt.detail }}</p>
+            }
+          </li>
+        }
+      </ol>
+    } @else {
+      <p class="muted">No attempts yet: the worker has claimed it but not tried it.</p>
+    }
+  } @else if (waiting()) {
+    <p class="muted">
+      Not recorded yet. The worker writes the row when it consumes the event, so this is normal for
+      a second or two after a send.
+      @if (refresh.enabled()) {
+        Checking again every few seconds.
+      } @else {
+        Auto-refresh is off; turn it on to keep checking.
+      }
+    </p>
+  } @else if (!error()) {
+    <p class="muted">Loading...</p>
+  }
+</aside>

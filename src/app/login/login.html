@@ -1,0 +1,31 @@
+<main class="login">
+  <form class="panel login-form" (ngSubmit)="submit()">
+    <h1>Notification dashboard</h1>
+    <p class="muted">Sign in with the platform's client credential.</p>
+
+    <label for="client-id">Client ID</label>
+    <input id="client-id" name="clientId" autocomplete="username" required [(ngModel)]="clientId" />
+
+    <label for="client-secret">Client secret</label>
+    <input
+      id="client-secret"
+      name="clientSecret"
+      type="password"
+      autocomplete="current-password"
+      required
+      [(ngModel)]="clientSecret"
+    />
+
+    @if (error(); as message) {
+      <p class="error" role="alert">{{ message }}</p>
+    }
+
+    <button
+      type="submit"
+      class="primary"
+      [disabled]="busy() || !clientId().trim() || !clientSecret()"
+    >
+      {{ busy() ? 'Signing in...' : 'Sign in' }}
+    </button>
+  </form>
+</main>

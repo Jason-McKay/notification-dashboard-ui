@@ -1,0 +1,134 @@
+<div class="page-heading">
+  <h1>Notifications</h1>
+  <p class="muted">Newest update first.</p>
+</div>
+
+<div class="filters">
+  <div class="field">
+    <label for="status-filter">Status</label>
+    <select
+      id="status-filter"
+      #statusSelect
+      (change)="filterBy({ status: statusSelect.value || null })"
+    >
+      <option value="" [selected]="!query().status">Any status</option>
+      @for (option of statuses; track option) {
+        <option [value]="option" [selected]="option === query().status">
+          {{ statusLabel(option) }}
+        </option>
+      }
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="channel-filter">Channel</label>
+    <select
+      id="channel-filter"
+      #channelSelect
+      (change)="filterBy({ channel: channelSelect.value || null })"
+    >
+      <option value="" [selected]="!query().channel">Any channel</option>
+      @for (option of channels; track option) {
+        <option [value]="option" [selected]="option === query().channel">{{ option }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="recipient-filter">Recipient ID (exact)</label>
+    <input
+      id="recipient-filter"
+      #recipientBox
+      type="search"
+      placeholder="dashboard-demo"
+      [value]="recipientDraft()"
+      (input)="onRecipientInput(recipientBox.value)"
+      (keydown.enter)="applyRecipient(recipientBox.value)"
+    />
+  </div>
+</div>
+
+@if (error(); as message) {
+  <p class="error" role="alert">{{ message }}</p>
+}
+
+<div class="layout" [class.with-detail]="selected()">
+  <section class="list" aria-label="Notification list">
+    @if (result(); as current) {
+      @if (current.items.length) {
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Status</th>
+                <th scope="col">Channel</th>
+                <th scope="col">Recipient</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Template</th>
+                <th scope="col" class="num">Attempts</th>
+                <th scope="col">Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of current.items; track item.eventId) {
+                <tr
+                  tabindex="0"
+                  [class.selected]="item.eventId === selected()"
+                  [attr.aria-current]="item.eventId === selected() ? 'true' : null"
+                  (click)="select(item.eventId)"
+                  (keydown.enter)="select(item.eventId)"
+                >
+                  <td><app-status-chip [status]="item.status" /></td>
+                  <td>{{ item.channel }}</td>
+                  <td>{{ item.recipientId }}</td>
+                  <td>{{ item.destination }}</td>
+                  <td>
+                    <code>{{ item.templateKey }}</code>
+                  </td>
+                  <td class="num">{{ item.attemptCount }}</td>
+                  <td>
+                    <time [attr.datetime]="item.updatedAt">{{
+                      item.updatedAt | date: 'MMM d, HH:mm:ss'
+                    }}</time>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else if (current.totalItems) {
+        <p class="empty">
+          Nothing on this page.
+          <button type="button" class="link" (click)="goToPage(0)">Back to the first page</button>
+        </p>
+      } @else if (filtered()) {
+        <p class="empty">No notifications match these filters.</p>
+      } @else {
+        <p class="empty">No notifications yet. Use Send test in the header to make one.</p>
+      }
+
+      <nav class="pager" aria-label="Pages">
+        <button type="button" [disabled]="current.page === 0" (click)="goToPage(current.page - 1)">
+          Previous
+        </button>
+        <span>
+          Page {{ current.page + 1 }} of {{ current.totalPages || 1 }} &middot;
+          {{ current.totalItems }} total
+        </span>
+        <button
+          type="button"
+          [disabled]="current.page + 1 >= current.totalPages"
+          (click)="goToPage(current.page + 1)"
+        >
+          Next
+        </button>
+      </nav>
+    } @else if (!error()) {
+      <p class="muted">Loading...</p>
+    }
+  </section>
+
+  @if (selected(); as eventId) {
+    <app-detail-panel [eventId]="eventId" (closed)="closeDetail()" />
+  }
+</div>

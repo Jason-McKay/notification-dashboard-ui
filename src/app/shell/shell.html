@@ -1,0 +1,58 @@
+<header class="topbar">
+  <span class="brand">Notification dashboard</span>
+
+  <nav aria-label="Main">
+    <a routerLink="/overview" routerLinkActive="active" ariaCurrentWhenActive="page">Overview</a>
+    <a routerLink="/notifications" routerLinkActive="active" ariaCurrentWhenActive="page">
+      Notifications
+    </a>
+  </nav>
+
+  <div class="actions">
+    <button
+      type="button"
+      class="toggle"
+      title="Reload every 5 seconds while this tab is visible"
+      [attr.aria-pressed]="refresh.enabled()"
+      (click)="refresh.toggle()"
+    >
+      Auto-refresh
+    </button>
+
+    <span class="send">
+      <label class="check">
+        <input
+          #fail
+          type="checkbox"
+          [checked]="failOnPurpose()"
+          (change)="failOnPurpose.set(fail.checked)"
+        />
+        Fail on purpose
+      </label>
+      <button type="button" class="primary" [disabled]="sending()" (click)="send()">
+        {{ sending() ? 'Sending...' : 'Send test' }}
+      </button>
+    </span>
+
+    <button type="button" (click)="signOut()">Sign out</button>
+  </div>
+</header>
+
+<p class="send-result" aria-live="polite">
+  @if (receipt(); as accepted) {
+    <span>
+      Accepted <code>{{ accepted.eventId.slice(0, 8) }}</code>
+      @if (accepted.duplicate) {
+        (duplicate)
+      }
+      &middot;
+      <a routerLink="/notifications" [queryParams]="{ selected: accepted.eventId }">view</a>
+    </span>
+  } @else if (sendError(); as message) {
+    <span class="error">{{ message }}</span>
+  }
+</p>
+
+<main class="content">
+  <router-outlet />
+</main>
