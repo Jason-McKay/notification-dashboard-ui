@@ -8,12 +8,24 @@ the last 24 hours of deliveries by status and channel, send a test notification 
 built to fail), and watch it move through `PENDING` → `RETRYING` → `DEAD_LETTERED` with its
 attempt timeline beside it.
 
+![Screen recording: signing in, sending a test that is delivered, then one built to fail that goes from Retrying to Dead-lettered and is opened to show its attempt timeline](docs/demo.gif)
+
+_A delivery built to fail goes `RETRYING`, then `DEAD_LETTERED`, and opening it shows its
+attempt timeline._
+
 Standalone components, signals, zoneless change detection, no component or state library.
 
 ## Screenshots
 
-_To come: overview, the list with a dead-lettered delivery open, and the retry sequence as
-a GIF._
+![Overview page: delivery counts for the last 24 hours by status, 8 in total with 6 sent and 2 dead-lettered, and a by-channel bar with all 8 on email](docs/overview.png)
+
+_The overview: rows updated in the last 24 hours, by status and by channel. Each card links
+to the list filtered by that status._
+
+![Notifications list with a dead-lettered delivery open in the side panel: three failed attempts, each "no template configured for key no-such-template", then the dead-letter marker](docs/dead-lettered.png)
+
+_A dead-lettered delivery open beside the list: three failed attempts, one second and then
+two seconds apart, and the marker parking it on `notification.requested-dlt`._
 
 ## How it fits together
 
@@ -58,14 +70,14 @@ Port 8080 is also the message-inspector backend's port. Stop that first if it is
 
 1. **Overview** shows the counts for rows updated in the last 24 hours, with each card
    linking to the list filtered by that status.
-2. **Send test** sends an `order-shipped` email to `dashboard-demo`. Follow the `view` link:
-   it reaches `SENT` within a second or two, and the rendered mail is waiting in Mailpit at
-   http://localhost:8025.
+2. **Send test** sends an `order-shipped` email to `dashboard-demo`. It shows up in the list
+   as `SENT` within a second or two (the `view` link opens it), and the rendered mail is
+   waiting in Mailpit at http://localhost:8025.
 3. Tick **Fail on purpose** and send again. That one names a template that does not exist,
-   so the worker tries it three times (waiting 1s, then 2s) and parks it. The panel shows it go
-   `RETRYING` and then `DEAD_LETTERED`, with three failed attempts and the dead-letter
-   marker in its timeline. `FAILED` lasts well under a second on the way to the dead-letter
-   topic, so a 5-second poll usually skips it.
+   so the worker tries it three times (waiting 1s, then 2s) and parks it. The list shows it
+   go `RETRYING` and then `DEAD_LETTERED`; open it, and the panel beside the list shows three
+   failed attempts and the dead-letter marker in its timeline. `FAILED` lasts well under a
+   second on the way to the dead-letter topic, so a 5-second poll usually skips it.
 4. Filters, page and the open row all live in the URL, so any view can be linked to.
 
 A 404 for a delivery you have just sent is expected for a moment: the worker writes the row
