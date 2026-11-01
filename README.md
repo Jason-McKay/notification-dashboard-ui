@@ -12,8 +12,10 @@ Standalone components, signals, zoneless change detection, no component or state
 
 ## Screenshots
 
-_To come: overview, the list with a dead-lettered delivery open, and the retry sequence as
-a GIF._
+![Dashboard demo](docs/demo.gif)
+
+![Overview](docs/overview.png)
+![A dead-lettered delivery with its attempt timeline](docs/dead-lettered.png)
 
 ## How it fits together
 
